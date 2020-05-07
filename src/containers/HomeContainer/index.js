@@ -1,10 +1,11 @@
 // @flow
 import * as React from 'react'
-import { Platform, StatusBar } from 'react-native'
+import { Platform, StatusBar, AsyncStorage } from 'react-native'
 import { connect } from 'react-redux'
 
 import HomeView from '../../screens/Home'
 import { fetchPictures } from './actions'
+import {getToken} from "../../services/API";
 
 export interface Props {
   navigation: any,
@@ -28,8 +29,17 @@ class HomeContainer extends React.Component<Props, State> {
     this.onLoadNext = this.onLoadNext.bind(this)
   }
 
-  componentDidMount () {
+  async componentDidMount () {
+    let token = await AsyncStorage.getItem("token");
+    this.receiveToken();
     this.onRefresh()
+  }
+
+  receiveToken(): void {
+    getToken().then(res => {
+      const token = res.data.token;
+      AsyncStorage.setItem("token", token);
+    });
   }
 
   onRefresh (): void {
@@ -38,6 +48,7 @@ class HomeContainer extends React.Component<Props, State> {
 
   onLoadNext (): void {
     // TODO: implement me
+    // this.props.fetchPictures(page + 1);
   }
 
   render () {

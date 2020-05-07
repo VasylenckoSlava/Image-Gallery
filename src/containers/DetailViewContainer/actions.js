@@ -1,6 +1,6 @@
 // @flow
 
-import { getPictureDetails } from '../../services/500pxAPI'
+import { getPictureDetails } from '../../services/API'
 import { FETCH_FAILED } from '../HomeContainer/actions'
 import type { ActionWithPayload, ActionWithoutPayload } from '../../types/actions'
 
@@ -15,19 +15,27 @@ export function pictureIsLoading (): ActionWithoutPayload {
 
 export function fetchPictureSuccess (imageId: number, hiResImage: string): ActionWithPayload {
   return {
-    // TODO: implement me
-  }
+    type: PICTURE_DETAILS_FETCH_SUCCESS,
+    payload: { imageId, hiResImage}
+  };
 }
 
 export function fetchPictureFailed (errorMessage: string): ActionWithPayload {
   return {
-    // TODO: implement me
-
-  }
+    type: FETCH_FAILED,
+    payload: { errorMessage }
+  };
 }
 
 export function fetchPictureDetails (imageId: number) {
   return async dispatch => {
-    // TODO: implement me
-  }
+    dispatch(pictureIsLoading());
+    getPictureDetails(imageId)
+        .then(({ data }) => {
+          dispatch(fetchPictureSuccess(data));
+        })
+        .catch(err => {
+          dispatch(fetchPictureFailed("Oops, something went wrong"));
+        });
+  };
 }
